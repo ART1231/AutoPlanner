@@ -33,18 +33,31 @@ class AutoPlanViewController: UIViewController, UITextFieldDelegate{
         return format.string(from: date)
     }
     
-    //func connect(day:Date, time:Date) -> Date{
-    //    let stringDate:String = setDay(date: day) + " " + setTime(date: time)
-    //    let format = DateFormatter()
-    //    format.locale = Locale(identifier: "ja_JP")
-    //    format.dateFormat = "yyyy年M月d日 H時m分"
-    //    let date = format.date(from: stringDate)
-    //    return(date!)
-    //}
+    func connect(day:Date, time:Date) -> Date{
+        let stringDate:String = setDay(date: day) + " " + setTime(date: time)
+        let format = DateFormatter()
+        format.locale = Locale(identifier: "ja_JP")
+        format.timeZone = TimeZone(identifier: "Asia/Tokyo")
+        format.dateFormat = "yyyy/MM/dd HH:mm"
+        if let date:Date = format.date(from: stringDate){
+            return date
+        } else{
+            return day
+        }
+    }
     
     
     @IBAction func isSetOK(_ sender: Any) {
-        print(connect(day: startDate.date, time: startTime.date))
+        let alertController = UIAlertController(title: "確認", message: "保存してよろしいでしょうか", preferredStyle: .alert )
+        let okAction = UIAlertAction(title: "保存", style: .default, handler: {(action: UIAlertAction!) in
+            self.navigationController?.popViewController(animated: true)
+        })
+        let cancelAction = UIAlertAction(title: "キャンセル", style: .cancel, handler: {(action: UIAlertAction!) in })
+        alertController.addAction(cancelAction)
+        alertController.addAction(okAction)
+
+        present(alertController, animated: true, completion: nil)
+
     }
     
     //最初からあるメソッド
@@ -69,12 +82,34 @@ class AutoPlanViewController: UIViewController, UITextFieldDelegate{
         return true
     }
     
-    func addevent() {
-        var eventStore = EKEventStore()
+    func addevent(date:Date) {
+        let eventStore = EKEventStore()
         let event = EKEvent(eventStore: eventStore)
         event.title = planName.text
-        //event.startDate =
-        
+        event.startDate = connect(day:date, time:startTime.date)
+        event.endDate = connect(day: date, time:endTime.date)
+        event.calendar = eventStore.defaultCalendarForNewEvents
+        do {
+            try eventStore.save(event, span: .thisEvent)
+        } catch {
+            let nserror = error as NSError
+            print(nserror)
+        }
     }
     
+    func addTask() {
+        let calendar = Calendar.current
+        var setDate:Date = startDate.date
+        
+        if(setDate == endDate.date){
+            addevent(date: setDate)
+        } else {
+            while(setDate != endDate.date){
+                addevent(date: setDate)
+                setDate = calendar.date(byAdding: .day, value: 1, to: setDate)!
+            }
+        }
+        
+        self.navigationController?.popViewController(animated: true)
+    }
 }
