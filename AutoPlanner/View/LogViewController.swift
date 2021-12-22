@@ -18,7 +18,7 @@ class LogViewController: UIViewController {
     @IBOutlet weak var gaptime: UILabel!
     
     
-    @IBAction func planButton(_ sender: Any) {
+    @IBAction func planButton(_ sendr: Any) {
         self.performSegue(withIdentifier: "toPlanning", sender: self)
     }
     
