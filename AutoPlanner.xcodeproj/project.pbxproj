@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7E76476D273843EA009C43FC /* tableController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E76476C273843EA009C43FC /* tableController.swift */; };
 		7E861E702689D20000C2803F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E861E6F2689D20000C2803F /* AppDelegate.swift */; };
 		7E861E722689D20000C2803F /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E861E712689D20000C2803F /* SceneDelegate.swift */; };
 		7E861E772689D20000C2803F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7E861E752689D20000C2803F /* Main.storyboard */; };
@@ -20,6 +21,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		7E76476C273843EA009C43FC /* tableController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = tableController.swift; sourceTree = "<group>"; };
 		7E861E6C2689D20000C2803F /* AutoPlanner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AutoPlanner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7E861E6F2689D20000C2803F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7E861E712689D20000C2803F /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -82,6 +84,7 @@
 				7E861E892689D6DD00C2803F /* EkWrapper.swift */,
 				7E861E8F269351B500C2803F /* LogViewController.swift */,
 				7E861E9126BBF55000C2803F /* AutoPlanViewController.swift */,
+				7E76476C273843EA009C43FC /* tableController.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -115,6 +118,10 @@
 		7E861E642689D20000C2803F /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				KnownAssetTags = (
+					1,
+					2,
+				);
 				LastSwiftUpdateCheck = 1250;
 				LastUpgradeCheck = 1250;
 				TargetAttributes = {
@@ -166,6 +173,7 @@
 				7E861E90269351B500C2803F /* LogViewController.swift in Sources */,
 				7E861E9226BBF55000C2803F /* AutoPlanViewController.swift in Sources */,
 				7E861E702689D20000C2803F /* AppDelegate.swift in Sources */,
+				7E76476D273843EA009C43FC /* tableController.swift in Sources */,
 				7E861E722689D20000C2803F /* SceneDelegate.swift in Sources */,
 				7E861E8A2689D6DD00C2803F /* EkWrapper.swift in Sources */,
 			);

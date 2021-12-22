@@ -20,6 +20,8 @@ class CalendarViewController: DayViewController, EKEventEditViewDelegate {
         requestAccessToCalendar()
         // Subscribe to notifications to reload the UI when
         subscribeToNotifications()
+            
+        
     }
     
     private func requestAccessToCalendar() {
