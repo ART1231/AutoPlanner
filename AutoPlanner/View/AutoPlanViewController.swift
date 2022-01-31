@@ -131,55 +131,16 @@ class AutoPlanViewController: UIViewController, UITextFieldDelegate{
         self.present(alert, animated: true, completion: nil)
     }
     
-    //純正カレンダーに追加するためのメソッド
-    func addevent(date:Date) {
-        let eventStore = EKEventStore()
-        let event = EKEvent(eventStore: eventStore)
-        event.title = planName.text
-        event.startDate = connect(day: date, time:startTime.date)
-        event.endDate = connect(day: date, time:endTime.date)
-        event.calendar = eventStore.defaultCalendarForNewEvents
-        //event.calendar = 
-        
-        do {
-            try eventStore.save(event, span: .thisEvent)
-            calendarIdentifier.append(event.eventIdentifier)
-            print(event.startDate!)
-        } catch {
-            let nserror = error as NSError
-            print("addevent")
-            print(nserror)
-        }
-    }
-    
-    //予定が重なってるときのタスク追加
-    func addExceptionEvent(startDate:Date, endDate:Date) {
-        let eventStore = EKEventStore()
-        let event = EKEvent(eventStore: eventStore)
-        event.title = planName.text
-        event.startDate = startDate
-        event.endDate = endDate
-        event.calendar = eventStore.defaultCalendarForNewEvents
-        
-        do {
-            try eventStore.save(event, span: .thisEvent)
-            calendarIdentifier.append(event.eventIdentifier)
-            print(event.startDate!)
-        } catch {
-            let nserror = error as NSError
-            print("addExceptionEvent")
-            print(nserror)
-        }
-    }
+
     
     //指定された期間の同じ時間にタスクを追加し続ける
     func addTask() {
         let calendar = Calendar.current
         var setDate:Date = startDate.date
-        
         let startDateTime = connect(day: setDate, time: startTime.date)
         let endDateTime = connect(day: endDate.date, time: endTime.date)
         
+        var allTaskTime = 0
         keyWord = (planName.text! + setDay(date: startDate.date) + setDay(date: endDate.date) + setTime(date: startTime.date) + setTime(date: endTime.date))
         //23じから1時までの予定
         //同日の場合、開始時間が終了時間を超えてはいけない
@@ -224,6 +185,63 @@ class AutoPlanViewController: UIViewController, UITextFieldDelegate{
             }
         }
         
+        
+        //純正カレンダーに追加するためのメソッド
+        func addevent(date:Date) {
+            let eventStore = EKEventStore()
+            let event = EKEvent(eventStore: eventStore)
+            event.title = planName.text
+            event.startDate = connect(day: date, time:startTime.date)
+            event.endDate = connect(day: date, time:endTime.date)
+            event.calendar = eventStore.defaultCalendarForNewEvents
+            allTaskTime += Int(event.endDate.timeIntervalSince(event.startDate))
+            print(allTaskTime)
+            
+            do {
+                try eventStore.save(event, span: .thisEvent)
+                calendarIdentifier.append(event.eventIdentifier)
+            } catch {
+                let nserror = error as NSError
+                print("addevent")
+                print(nserror)
+            }
+        }
+        
+        //予定が重なってるときのタスク追加
+        func addExceptionEvent(startDate:Date, endDate:Date) {
+            let eventStore = EKEventStore()
+            let event = EKEvent(eventStore: eventStore)
+            event.title = planName.text
+            event.startDate = startDate
+            event.endDate = endDate
+            event.calendar = eventStore.defaultCalendarForNewEvents
+            allTaskTime += Int(event.endDate.timeIntervalSince(event.startDate))
+            print(allTaskTime)
+            
+            do {
+                try eventStore.save(event, span: .thisEvent)
+                calendarIdentifier.append(event.eventIdentifier)
+            } catch {
+                let nserror = error as NSError
+                print("addExceptionEvent")
+                print(nserror)
+            }
+        }
+        
+        func timeChange(time:Int) -> String{
+            let hours:Int = time/3600
+            let minutes:Int = time%3600/60
+            return("\(hours) 時間 \(minutes) 分")
+        }
+        
+        func setglobal() {
+            var taskArray:[[String]] = UserDefaults.standard.array(forKey: "tasks") as? [[String]] ?? [[String]]()
+            let taskInfo:[String] = [planName.text!, setDay(date: startDate.date), setDay(date: endDate.date), setTime(date: startTime.date), setTime(date: endTime.date), timeChange(time: allTaskTime)]
+            taskArray.append(taskInfo)
+            UserDefaults.standard.set(taskArray, forKey: "tasks")
+            UserDefaults.standard.set(calendarIdentifier, forKey: keyWord)
+            
+        }
 
         func whichAddEvent() {
             var temStartDateTime = connect(day: setDate, time: startTime.date)
@@ -271,29 +289,14 @@ class AutoPlanViewController: UIViewController, UITextFieldDelegate{
                 addExceptionEvent(startDate: temStartDateTime, endDate: setEndTime)
             }
         }
-        
         setglobal()
         calendarIdentifier.removeAll()
         self.navigationController?.popViewController(animated: true)
     }
     
-    func setglobal() {
-        // globalStartTime = setTime(date: startTime.date)
-        // globalEndTime = setTime(date: endTime.date)
-        // globalStartDate = setDay(date: startDate.date)
-        // globalEndDate = setDay(date: endTime.date)
-        // globalName = planName.text!
-        
-        var taskArray:[[String]] = UserDefaults.standard.array(forKey: "tasks") as? [[String]] ?? [[String]]()
-        let taskInfo:[String] = [planName.text!, setDay(date: startDate.date), setDay(date: endDate.date), setTime(date: startTime.date), setTime(date: endTime.date)]
-        print("before" , taskArray)
-        taskArray.append(taskInfo)
-        print("after", taskArray)
-        print("calendaridentifier" , calendarIdentifier!)
-        UserDefaults.standard.set(taskArray, forKey: "tasks")
-        UserDefaults.standard.set(calendarIdentifier, forKey: keyWord)
-        
-    }
+    
+    
+
     
     
     
