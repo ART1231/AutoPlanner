@@ -15,12 +15,10 @@ class AutoPlanViewController: UIViewController, UITextFieldDelegate{
     @IBOutlet weak var endDate: UIDatePicker!
     @IBOutlet weak var startTime: UIDatePicker!
     @IBOutlet weak var endTime: UIDatePicker!
-    //@IBOutlet weak var taskAllTime: UIDatePicker!
     
     var calendarIdentifier:[String]! = []
     var keyWord:String!
     
-    //最初からあるメソッド
     override func viewDidLoad() {
         super.viewDidLoad()
         planName.delegate = self
@@ -44,29 +42,6 @@ class AutoPlanViewController: UIViewController, UITextFieldDelegate{
         tapGR.cancelsTouchesInView = false
         self.view.addGestureRecognizer(tapGR)
         
-        
-        let visit = UserDefaults.standard.bool(forKey: "visit")
-        if visit {
-            //二回目以降
-            print("二回目以降")
-        } else {
-            //初回アクセス
-            print("初回起動")
-            let appEventStore = EKEventStore()
-            let appCalendar = EKCalendar(for: EKEntityType.event, eventStore: appEventStore)
-            appCalendar.cgColor = UIColor.red.cgColor
-            appCalendar.title = "tasks"
-            do {
-                try appEventStore.saveCalendar(appCalendar, commit: true)
-            } catch let error as NSError {
-                print(error)
-            }
-            UserDefaults.standard.set(true, forKey: "visit")
-        }
-    }
-    
-    func zeroMinute(date: Date){
-        
     }
     
     //returnボタンをおしたら入力終了
@@ -78,7 +53,7 @@ class AutoPlanViewController: UIViewController, UITextFieldDelegate{
         self.view.endEditing(true)
     }
     
-    //datepickerで日にちだけを抽出する
+    //datepickerで日にちだけをString型で抽出する
     func setDay(date:Date) -> String{
         let format = DateFormatter()
         format.dateStyle = .short
@@ -87,7 +62,7 @@ class AutoPlanViewController: UIViewController, UITextFieldDelegate{
         return format.string(from: date)
     }
     
-    //datepickerで時間だけを抽出する
+    //datepickerで時間だけをString型で抽出する
     func setTime(date:Date) -> String{
         let format = DateFormatter()
         format.dateStyle = .none
@@ -96,7 +71,7 @@ class AutoPlanViewController: UIViewController, UITextFieldDelegate{
         return format.string(from: date)
     }
     
-    //日付と時間を連結させる
+    //Date型の日付と時間を連結させる
     //returnはDate型
     func connect(day:Date, time:Date) -> Date{
         let stringDate:String = setDay(date: day) + " " + setTime(date: time)
@@ -124,7 +99,8 @@ class AutoPlanViewController: UIViewController, UITextFieldDelegate{
         present(alertController, animated: true, completion: nil)
 
     }
-    
+   
+    // 開始時間が終了時間より後にあった場合のエラー表示
     func errorTimeAlert() {
         let alert = UIAlertController(title: "エラー", message: "開始日時が終了日時の後になっています", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
@@ -133,7 +109,7 @@ class AutoPlanViewController: UIViewController, UITextFieldDelegate{
     
 
     
-    //指定された期間の同じ時間にタスクを追加し続ける
+    //　指定された期間の同じ時間にタスクを追加し続ける
     func addTask() {
         let calendar = Calendar.current
         var setDate:Date = startDate.date
@@ -142,12 +118,6 @@ class AutoPlanViewController: UIViewController, UITextFieldDelegate{
         
         var allTaskTime = 0
         keyWord = (planName.text! + setDay(date: startDate.date) + setDay(date: endDate.date) + setTime(date: startTime.date) + setTime(date: endTime.date))
-        //23じから1時までの予定
-        //同日の場合、開始時間が終了時間を超えてはいけない
-        //datepicker のようび
-        //被りの除去
-        //カレンダーの選択
-        //あとで全部消せる
         
         //被せる可能性がある日だけをピックアップ
         var pickEvents: [EKEvent] = []
@@ -216,7 +186,6 @@ class AutoPlanViewController: UIViewController, UITextFieldDelegate{
             event.endDate = endDate
             event.calendar = eventStore.defaultCalendarForNewEvents
             allTaskTime += Int(event.endDate.timeIntervalSince(event.startDate))
-            print(allTaskTime)
             
             do {
                 try eventStore.save(event, span: .thisEvent)
@@ -228,12 +197,14 @@ class AutoPlanViewController: UIViewController, UITextFieldDelegate{
             }
         }
         
+        // Int型で集計したタスク合計時間を, 〇〇時間〇〇分のString型で返す
         func timeChange(time:Int) -> String{
             let hours:Int = time/3600
             let minutes:Int = time%3600/60
             return("\(hours) 時間 \(minutes) 分")
         }
         
+        //UserDefaultsを用いてTask画面に設定内容を保存する
         func setglobal() {
             var taskArray:[[String]] = UserDefaults.standard.array(forKey: "tasks") as? [[String]] ?? [[String]]()
             let taskInfo:[String] = [planName.text!, setDay(date: startDate.date), setDay(date: endDate.date), setTime(date: startTime.date), setTime(date: endTime.date), timeChange(time: allTaskTime)]
@@ -242,7 +213,8 @@ class AutoPlanViewController: UIViewController, UITextFieldDelegate{
             UserDefaults.standard.set(calendarIdentifier, forKey: keyWord)
             
         }
-
+        
+        //　重なりそうな場合は回避し, 問題なければそのまま追加する
         func whichAddEvent() {
             var temStartDateTime = connect(day: setDate, time: startTime.date)
             var setStartTime = temStartDateTime
@@ -293,16 +265,5 @@ class AutoPlanViewController: UIViewController, UITextFieldDelegate{
         calendarIdentifier.removeAll()
         self.navigationController?.popViewController(animated: true)
     }
-    
-    
-    
 
-    
-    
-    
-    //timeintervarl
-    //var allTime:Int = 0
-    //var limitTime = Int(AllSpendTime.countDownDuration)
-    //var setEndDateTime = connect(day: setDate, time: endTime.date)
-    
 }
