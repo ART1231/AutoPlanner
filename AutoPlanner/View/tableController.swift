@@ -38,9 +38,6 @@ class TableController: UIViewController ,UITableViewDataSource, UITableViewDeleg
             return 0
         }
 
-        //} else {
-        //    return 0
-        //}
     }
     
     //各セルの要素を設定する
@@ -91,10 +88,8 @@ class TableController: UIViewController ,UITableViewDataSource, UITableViewDeleg
         let alltime = cell.viewWithTag(5) as! UILabel
         alltime.text = "\(hour) 時間 \(minute) 分 / \(tasks![indexPath.row][5])  経過"
         
-        
         return cell
-        
-
+       
     }
     // Cell の高さを１２０にする
     func tableView(_ table: UITableView,heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -106,7 +101,7 @@ class TableController: UIViewController ,UITableViewDataSource, UITableViewDeleg
            return true
     }
     
-       //スワイプしたセルを削除
+    //スワイプしたセルを削除
     func tableView(_ tableView: UITableView, commit editingStyle:UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         var tasks = userDefaults.array(forKey: "tasks")! as? [[String]]
         print("tasks", tasks!)
