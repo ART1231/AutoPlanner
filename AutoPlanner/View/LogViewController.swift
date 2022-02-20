@@ -67,9 +67,7 @@ class LogViewController: UIViewController {
             let formatDay = DateFormatter()
             formatDay.dateStyle = .short
             formatDay.locale = Locale(identifier: "ja_JP")
-            
-            //var previousHour = 0
-            //var previousMinute = 0
+
             var allSpareMinute = 0
             
             var formatStartTime:(Int, Int)
